@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
@@ -22,11 +23,12 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.juniormargalho.ifood.R;
 import com.juniormargalho.ifood.helper.ConfiguracaoFirebase;
+import com.juniormargalho.ifood.helper.UsuarioFirebase;
 
 public class AutenticacaoActivity extends AppCompatActivity {
     private Button botaoAcessar;
     private EditText campoEmail, campoSenha;
-    private Switch tipoAcesso;
+    private Switch tipoAcesso, tipoUsuario;
     private LinearLayout linearTipoUsuario;
     private FirebaseAuth autenticacao;
 
@@ -38,9 +40,23 @@ public class AutenticacaoActivity extends AppCompatActivity {
 
         inicializarComponentes();
         autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
+        //autenticacao.signOut();
 
         //Verificar usuario logado
         verificarUsuarioLogado();
+
+        tipoAcesso.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){//empresa
+                    linearTipoUsuario.setVisibility(View.VISIBLE);
+                    botaoAcessar.setText("cadastrar");
+                }else{//usuario
+                    linearTipoUsuario.setVisibility(View.GONE);
+                    botaoAcessar.setText("Acessar");
+                }
+            }
+        });
 
         botaoAcessar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,5 +147,7 @@ public class AutenticacaoActivity extends AppCompatActivity {
         campoEmail = findViewById(R.id.editCadastroEmail);
         campoSenha = findViewById(R.id.editCadastroSenha);
         tipoAcesso = findViewById(R.id.switchAcesso);
+        tipoUsuario = findViewById(R.id.switchTipoUsuario);
+        linearTipoUsuario = findViewById(R.id.linearTipoUsuario);
     }
 }
