@@ -4,11 +4,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/menuNovoProduto"
-        android:icon="@drawable/ic_adicionar_24dp"
-        android:title="Novo Produto"
+        android:id="@+id/menuPesquisa"
+        android:icon="@drawable/ic_pesquisa_24dp"
+        android:title="Pesquisa"
         app:showAsAction="always" />
-
     <item
         android:id="@+id/menuConfiguracoes"
         android:title="Configurações"
@@ -18,4 +17,5 @@
         android:id="@+id/menuSair"
         android:title="Sair"
         app:showAsAction="never" />
+
 </menu>
