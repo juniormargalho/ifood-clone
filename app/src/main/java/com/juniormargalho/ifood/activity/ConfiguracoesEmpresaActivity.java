@@ -16,12 +16,17 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.juniormargalho.ifood.R;
 import com.juniormargalho.ifood.helper.ConfiguracaoFirebase;
 import com.juniormargalho.ifood.helper.UsuarioFirebase;
 import com.juniormargalho.ifood.model.Empresa;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 
@@ -31,6 +36,7 @@ public class ConfiguracoesEmpresaActivity extends AppCompatActivity {
 
     private static final int SELECAO_GALERIA = 200;
     private StorageReference storageReference;
+    private DatabaseReference firebaseRef;
     private String idUsuarioLogado;
     private String urlImagemSelecionada = "";
 
@@ -42,6 +48,7 @@ public class ConfiguracoesEmpresaActivity extends AppCompatActivity {
         //Configurações iniciais
         inicializarComponentes();
         storageReference = ConfiguracaoFirebase.getFirebaseStorage();
+        firebaseRef = ConfiguracaoFirebase.getFirebase();
         idUsuarioLogado = UsuarioFirebase.getIdUsuario();
 
         //Configurações Toolbar
@@ -59,6 +66,34 @@ public class ConfiguracoesEmpresaActivity extends AppCompatActivity {
                 if( i.resolveActivity(getPackageManager()) != null ){
                     startActivityForResult(i, SELECAO_GALERIA);
                 }
+            }
+        });
+
+        /*Recuperar dados da empresa*/
+        recuperarDadosEmpresa();
+    }
+
+    private void recuperarDadosEmpresa(){
+        DatabaseReference empresaRef = firebaseRef.child("empresas").child( idUsuarioLogado );
+        empresaRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if( dataSnapshot.getValue() != null ){
+                    Empresa empresa = dataSnapshot.getValue(Empresa.class);
+                    editEmpresaNome.setText(empresa.getNome());
+                    editEmpresaCategoria.setText(empresa.getCategoria());
+                    editEmpresaTaxa.setText(empresa.getPrecoEntrega().toString());
+                    editEmpresaTempo.setText(empresa.getTempo());
+
+                    urlImagemSelecionada = empresa.getUrlImagem();
+                    if( urlImagemSelecionada != "" ){
+                        Picasso.get().load(urlImagemSelecionada).into(imagePerfilEmpresa);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
             }
         });
     }
